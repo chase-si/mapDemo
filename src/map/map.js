@@ -7,8 +7,26 @@ import { zhanDian } from '../static/img'
 //     calcPositionByDistance,
 //     numberToDotString
 // } from './handleData'
-
 window.CESIUM_BASE_URL = '/Cesium'
+
+
+/**
+* 根据两个点位的经纬度, 示向度计算位置
+*/
+const degreeToRad = (degree) => (Math.PI * degree) / 180
+// 根据经纬度， 示向度， 和距离， 计算出一个经纬度， 用于画射线用
+const calcPositionByDistance = ({
+    longitude = 0,
+    latidute = 0,
+    angle = 0, // 相对于正北
+    distance = 5 // 5经度°的距离, 差不多500km
+}) => {
+    const degree = degreeToRad(angle)
+    return [
+        longitude + (distance * Math.sin(degree)),
+        latidute + (distance * Math.cos(degree))
+    ]
+}
 
 export const initCesium = (domId) => {
     // 初始化地球

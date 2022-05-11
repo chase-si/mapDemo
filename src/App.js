@@ -3,6 +3,7 @@ import './App.css';
 
 import DrawNet from './pages/drawNet';
 import Analysis from './pages/analysis';
+import CrossPoint from './pages/crossPoint';
 
 const routers = [{
 	path: '/drawnet',
@@ -10,6 +11,9 @@ const routers = [{
 }, {
   	path: '/analysis',
   	component: <Analysis />
+}, {
+	path: '/crossPoint',
+	component: <CrossPoint />
 }]
 
 

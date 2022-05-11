@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import { initCesium, drawTreeNew } from '../../map/map'
+import { initCesium, crossPointNew } from '../../map/map'
 import { DATA } from './constants'
 
 const DrawNet = () => {
@@ -9,7 +9,11 @@ const DrawNet = () => {
     }, [])
 
     const handleBtn = () => {
-        drawTreeNew(DATA)
+        crossPointNew({
+            ...DATA,
+            crossEntities: []
+        })
+        console.log(DATA)
     }
 
     return (
