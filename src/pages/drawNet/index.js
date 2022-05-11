@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+
+import { initCesium } from '../../map/map'
+
 
 const DrawNet = () => {
+    useEffect(() => {
+        initCesium('map')
+    }, [])
+
     return (
         <div>
-            dd
+            <div id="map" />
         </div>
     )
 }

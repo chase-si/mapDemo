@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tilemap version="1.0.0" tilemapservice="http://127.0.0.1/">
+	<title>ImageLayers</title>
+	<abstract>Made By HengGe Soft</abstract>
+	  
+	
+	<!--平顶金字塔配置信息-->
+	<SRS>epsg:4326</SRS>
+	<BoundingBox minx="-180.000000" miny="-90.000000" maxx="180.000000" maxy="90.000000" />
+	<initialExtent minx="-180.000000" miny="-90.000000" maxx="180.000000" maxy="90.000000"/>
+	<Origin x="-180.000000" y="-90.000000" />  
+	
+	<tileformat width="512" height="512" mime-type="ImageLayers" extension="jpg" />
+	<!--tiletype>hang_sjz_standard_hang</tiletype-->
+	<tiletype>sjz_standard_hang</tiletype>
+
+	
+	<!--平顶金字塔配置信息-->
+	<TileSets>
+		<TileSet href="http://127.0.0.1/0" units-per-pixel="5.62500000000000000000" order="0"/>
+		<TileSet href="http://127.0.0.1/1" units-per-pixel="2.81250000000000000000" order="1"/>
+		<TileSet href="http://127.0.0.1/2" units-per-pixel="1.40625000000000000000" order="2"/>
+		<TileSet href="http://127.0.0.1/3" units-per-pixel="0.70312500000000000000" order="3"/>
+		<TileSet href="http://127.0.0.1/4" units-per-pixel="0.35156250000000000000" order="4"/>
+		<TileSet href="http://127.0.0.1/5" units-per-pixel="0.17578125000000000000" order="5"/>
+		<TileSet href="http://127.0.0.1/6" units-per-pixel="0.08789062500000000000" order="6"/>
+		<TileSet href="http://127.0.0.1/7" units-per-pixel="0.04394531250000000000" order="7"/>
+		<TileSet href="http://127.0.0.1/8" units-per-pixel="0.02197265625000000000" order="8"/>
+		<TileSet href="http://127.0.0.1/9" units-per-pixel="0.01098632812500000000" order="9"/>
+		<TileSet href="http://127.0.0.1/10" units-per-pixel="0.00549316406250000000" order="10"/>
+		<TileSet href="http://127.0.0.1/11" units-per-pixel="0.00274658203125000000" order="11"/>
+		<TileSet href="http://127.0.0.1/12" units-per-pixel="0.00137329101562500000" order="12"/>
+		<TileSet href="http://127.0.0.1/13" units-per-pixel="0.00068664550781250000" order="13"/>
+		<TileSet href="http://127.0.0.1/14" units-per-pixel="0.00034332275390625000" order="14"/>
+		<TileSet href="http://127.0.0.1/15" units-per-pixel="0.00017166137695310000" order="15"/>
+		<TileSet href="http://127.0.0.1/16" units-per-pixel="0.00008593068847655000" order="16"/>
+		<TileSet href="http://127.0.0.1/17" units-per-pixel="0.00004291523442382750" order="17"/>
+		<TileSet href="http://127.0.0.1/18" units-per-pixel="0.00002145767211913750" order="18"/>
+		<TileSet href="http://127.0.0.1/19" units-per-pixel="0.00001072883605956875" order="19"/>
+	</TileSets> 
+	
+	<layers>
+		<layer id="0" name="World Imagery" parentLayerId="-1" defaultVisibility="true" subLayerIds="null" minScale="0" maxScale="0"/>
+		<layer id="1" name="Low Resolution 15m Imagery" parentLayerId="-1" defaultVisibility="true" subLayerIds="null" minScale="0" maxScale="0"/>
+		<layer id="2" name="High Resolution 60cm Imagery" parentLayerId="-1" defaultVisibility="true" subLayerIds="null" minScale="0" maxScale="0"/>
+		<layer id="3" name="High Resolution 30cm Imagery" parentLayerId="-1" defaultVisibility="true" subLayerIds="null" minScale="0" maxScale="0"/>
+	</layers>
+</tilemap>
+
