@@ -1,25 +1,45 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react'
 import './App.css';
 
+import DrawNet from './pages/drawNet';
+import Analysis from './pages/analysis';
+
+const routers = [{
+	path: '/drawnet',
+  	component: <DrawNet />
+}, {
+  	path: '/analysis',
+  	component: <Analysis />
+}]
+
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [currentRouter, setCurrent] = useState(null)
+
+	useEffect(() => {
+		if (window.location.pathname) {
+			const tarPage = routers.find(item => item.path === window.location.pathname)
+			if (tarPage) {
+				setCurrent(tarPage.component)
+			}
+		}
+	} , [window?.location?.pathname])
+
+  	return (
+    	<div className="App">
+			<div className="nav">
+				{routers.map(router => (
+					<a key={router.path} href={router.path}>
+						{router.path}
+					</a>
+				))}
+			</div>
+
+			<div className="body">
+				{currentRouter}
+			</div>
+    	</div>
+  	);
 }
 
 export default App;
