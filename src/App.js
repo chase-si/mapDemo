@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react'
 import './App.css';
 
 import DrawNet from './pages/drawNet';
+import DlDrawNet from './pages/olDrawNet';
 import Analysis from './pages/analysis';
 import CrossPoint from './pages/crossPoint';
 
 const routers = [{
 	path: '/drawnet',
-  	component: <DrawNet />
+  	component:<>
+	         <DrawNet />
+	         <DlDrawNet />
+	         </>
 }, {
   	path: '/analysis',
   	component: <Analysis />
