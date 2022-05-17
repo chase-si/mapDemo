@@ -158,15 +158,15 @@ export const initCesium = (domId) => {
       return map;
 };
 
-export const drawTreeNew = (data) => {
+export const drawTreeNew = (data, mapInstance) => {
     const {longitude,latitude} = data;
     const layer = new LayerVector({
         source: createVectorSource(data)
     });
     //重新设置Layers
-    map.setLayers(layers);
+    mapInstance.setLayers(layers);
     //添加
-    map.addLayer(layer);
+    mapInstance.addLayer(layer);
     //中心坐标
     view.setCenter(convertTransform([longitude, latitude]));
     view.setZoom(5);
