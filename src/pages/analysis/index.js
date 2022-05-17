@@ -7,7 +7,7 @@ import { PIC_DATA } from './constants'
 const Analysis = () => {
     useEffect(() => {
         initCesium('map')
-        // drawTreeNew(DATA)
+        drawTreeNew(DATA)
     }, [])
 
     const handleBtn = () => {
