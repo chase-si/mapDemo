@@ -2,9 +2,9 @@ import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
 //图层
-import { Tile, Vector as LayerVector } from 'ol/layer';
+import { Tile, Vector as LayerVector,Image as LayerImage } from 'ol/layer';
 //数据源
-import { OSM, Vector as SourceVector } from 'ol/source';
+import { OSM, Vector as SourceVector,ImageStatic } from 'ol/source';
 //样式
 import { Style, Fill, Stroke, Circle ,Text} from 'ol/style';
 //几何
@@ -35,6 +35,19 @@ function drawStyle() {
         }),
         stroke: new Stroke({
           color: "rgba(0, 191, 255, .6)",
+          width: 2,
+        }),
+      });
+}
+
+//点的样式
+function drawDotStyle() {
+    return new Style({
+        fill: new Fill({
+          color: "rgba(255, 0, 0)",
+        }),
+        stroke: new Stroke({
+          color: "rgba(255, 0, 0)",
           width: 2,
         }),
       });
@@ -78,6 +91,19 @@ function createCircleFeature(params,opt_radius) {
     return circleFeature;
 };
 
+/**
+* 画点
+* opt_radius: 圆半径
+*/
+function createDotFeature(params,opt_radius) {
+    const {longitude, latitude} = params;
+   const circleFeature =  new Feature({
+        geometry: new geomCircle(convertTransform([longitude, latitude]), opt_radius)
+    })
+    circleFeature.setStyle(drawDotStyle())
+    return circleFeature;
+};
+
 
 //画线
 function createLineFeature(params) {
@@ -95,6 +121,7 @@ function createLineFeature(params) {
 //创建文字
 function createTitleFeature (params) {
     const {station_name,longitude,latitude} = params
+    console.log(params);
     const titleFeature = new Feature({
         geometry: new Point(fromLonLat([longitude, latitude])),
         name: station_name
@@ -125,12 +152,6 @@ function createVectorSource(params) {
         features: center.concat(drawing)
     });
 };
-
-//创建图层
-// function createLayerVector(params) {
-//     return 
-// }
-
 
 //图层
 let layers = [
@@ -172,3 +193,54 @@ export const drawTreeNew = (data, mapInstance) => {
     view.setZoom(5);
 };
 
+//创建静态图片
+function createImageStaticSource({
+    start,
+    end,
+    image // base 64
+}){
+    return  new ImageStatic({
+        projection: isoCoord,
+        url:image,
+        imageExtent:[start[0], start[1], end[0], end[1]],
+    })
+}
+
+//创建静态图层
+export const createPictrueNew = (data) => {
+    const {start} = data
+    const layerImage = new LayerImage({
+        source: createImageStaticSource(data)
+    })
+    map.addLayer(layerImage);
+    view.setCenter(convertTransform([start[0], start[1]]));
+    console.log(map.getLayers());
+}
+
+function createVectorSourcePoint(params) {
+    const {
+        channels,
+        interaction = params['intersection-point'],
+        station_name ="信号交汇点",
+        longitude = params['intersection-point'][0],
+        latitude = params['intersection-point'][1]
+    } = params
+    return new SourceVector({
+        projection: isoCoord,
+        features: [
+            createTitleFeature({station_name,longitude,latitude}),
+            createDotFeature({longitude,latitude},4000)
+        ]
+    }); 
+}
+
+
+export const crossPointNew = (data) => {
+    console.log(data);
+    const layerVector = new LayerVector({
+        source: createVectorSourcePoint(data)
+    });
+    map.addLayer(layerVector);
+    view.setCenter(convertTransform(data["intersection-point"]));
+    view.setZoom(6);
+}

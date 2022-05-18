@@ -748,7 +748,7 @@ const getOnePointEntity = (props) => {
             verticalOrigin,
             PixelOffset: new Cesium.Cartesian2(1.0, 0.0)
         }
-
+        
     })
 }
 //  交汇信号 画 N个点  N-1条线

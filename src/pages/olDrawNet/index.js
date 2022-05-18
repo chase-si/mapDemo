@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 
 import { initCesium ,drawTreeNew} from '../../map/olMap'
-import { DATA } from './constants'
+import { DATA } from '../drawNet/constants'
 
 const OlDrawNet = () => {
     const mapInstance = useRef(null)
