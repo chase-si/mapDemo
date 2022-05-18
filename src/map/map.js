@@ -461,10 +461,7 @@ export const chooseSensor = (dispatch, type) => {
         // 删除绘制的点和线
         removePoint(positions)
         removeLine(positions)
-        dispatch({
-            type: UPDATE_SELECTED_DEVICES_LIST,
-            param: []
-        })
+        dispatch([])
         result = []
     } if (type === 3) {
         // 注销 鼠标相关事件
@@ -482,10 +479,7 @@ export const chooseSensor = (dispatch, type) => {
         if (ids.length > 0) {
             selectedPoint = zhandianinfos.filter(zhandianinfo => ids.filter(id => id === zhandianinfo.node_id).length > 0)
             if (selectedPoint) {
-                dispatch({
-                    type: UPDATE_SELECTED_DEVICES_LIST,
-                    param: selectedPoint
-                })
+                dispatch(selectedPoint)
             }
         }
         result = selectedPoint

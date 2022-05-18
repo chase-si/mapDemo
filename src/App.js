@@ -4,6 +4,7 @@ import './App.css';
 import DrawNet from './pages/drawNet';
 import OlDrawNet from './pages/olDrawNet';
 import Analysis from './pages/analysis';
+import SelectDevices from './pages/selectDevices';
 import CrossPoint from './pages/crossPoint';
 import OlAnalysis from './pages/olAnalysis';
 import OlCrossPoint from './pages/olCrossPoint';
@@ -27,6 +28,11 @@ const routers = [{
 	component: <>
 			<CrossPoint />
 			<OlCrossPoint /> 
+			</>
+}, {
+	path: '/selectDevices',
+	component: <>
+			<SelectDevices /> 
 			</>
 }]
 

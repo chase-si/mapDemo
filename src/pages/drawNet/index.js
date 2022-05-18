@@ -6,9 +6,11 @@ import { DATA } from './constants'
 const DrawNet = () => {
     useEffect(() => {
         initCesium('map')
+        drawTreeNew(DATA)
     }, [])
 
     const handleBtn = () => {
+        console.log(123)
         drawTreeNew(DATA)
     }
 
