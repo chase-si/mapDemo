@@ -8,7 +8,7 @@ import { OSM, Vector as SourceVector,ImageStatic } from 'ol/source';
 //样式
 import { Style, Fill, Stroke, Circle ,Text} from 'ol/style';
 //几何
-import { Circle as geomCircle,Point ,LineString} from 'ol/geom';
+import { Circle as geomCircle,Point ,LineString,MultiLineString} from 'ol/geom';
 
 import {transform,fromLonLat} from 'ol/proj';
 //要素
@@ -217,6 +217,22 @@ export const createPictrueNew = (data) => {
     console.log(map.getLayers());
 }
 
+/**
+* 根据两个点位的经纬度, 示向度计算位置
+*/
+const degreeToRad = (degree) => (Math.PI * degree) / 180
+// 根据经纬度， 示向度， 和距离， 计算出一个经纬度， 用于画射线用
+const calcPositionByDistance = ({
+    longitude = 0,
+    latitude = 0,
+    angle = 0, // 相对于正北
+    distance = 5 // 5经度°的距离, 差不多500km
+}) => { 
+    const degree = degreeToRad(angle)
+    return {longitude:longitude + (distance * Math.sin(degree)),
+            latitude:latitude + (distance * Math.cos(degree))}
+}
+
 function createVectorSourcePoint(params) {
     const {
         channels,
@@ -225,12 +241,25 @@ function createVectorSourcePoint(params) {
         longitude = params['intersection-point'][0],
         latitude = params['intersection-point'][1]
     } = params
+    const center = [
+        createTitleFeature({station_name,longitude,latitude}),
+        createDotFeature({longitude,latitude},4000),
+    ]
+    const drawing = channels?.map(channel => {
+       const distance =  calcPositionByDistance({
+        longitude: channel[0],
+        latitude: channel[1],
+        angle: channel[3]});
+        const coord = {longitude: channel[0],latitude: channel[1]}
+        return [createCircleFeature(coord,2000),
+                createCircleFeature(coord,12000),
+                createTitleFeature({...coord, station_name: channel[9]}),
+                createLineFeature({...coord ,parent_longitude: distance.longitude, parent_latitude: distance.latitude})
+            ];
+    })?.reduce((a,b) => a.concat(b));
     return new SourceVector({
         projection: isoCoord,
-        features: [
-            createTitleFeature({station_name,longitude,latitude}),
-            createDotFeature({longitude,latitude},4000)
-        ]
+        features: center.concat(drawing)
     }); 
 }
 

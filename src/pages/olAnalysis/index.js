@@ -1,13 +1,18 @@
-import React, { useEffect } from 'react'
+import React, { useEffect ,useRef} from 'react'
 
 import { initCesium, drawTreeNew, createPictrueNew } from '../../map/olMap'
 import { DATA } from '../drawNet/constants'
 import { PIC_DATA } from '../analysis/constants'
 
 const OlAnalysis = () => {
+    const mapInstance = useRef(null)
     useEffect(() => {
-        initCesium('olMap')
-        drawTreeNew(DATA)
+        mapInstance.current = initCesium('olMap')
+        drawTreeNew(DATA,mapInstance.current)
+        return () => {
+            mapInstance.current = null
+        }
+        
     }, [])
 
     const handleBtn = () => {
