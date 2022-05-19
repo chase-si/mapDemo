@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 
-import { initCesium ,drawTreeNew} from '../../map/olMap'
+import { initCesium ,drawTreeNew,removeLayerDraw,resetLayerDraw} from '../../map/olMap'
 import { DATA } from '../drawNet/constants'
 
 const OlDrawNet = () => {
@@ -12,18 +12,33 @@ const OlDrawNet = () => {
         mapInstance.current = initCesium('olMap')
         return () => {
             mapInstance.current = null
+            mapInstance.layer = null
         }
     }, [])
 
     const handleBtn = () => {
         // 所有需要map实例的地方把他传到function里
-        drawTreeNew(DATA, mapInstance.current)
+        mapInstance.layer =  drawTreeNew(DATA, mapInstance.current)
+    }
+    const clearBtn = () => {
+        // 所有需要map实例的地方把他传到function里
+        removeLayerDraw(mapInstance.current,mapInstance.layer)
+    }
+    const resetBtn = () => {
+        // 所有需要map实例的地方把他传到function里
+        resetLayerDraw(mapInstance.current)
     }
 
     return (
         <div>
             <button onClick={handleBtn}>
                 draw
+            </button>
+            <button onClick={clearBtn}>
+                清除图层
+            </button>
+            <button onClick={resetBtn}>
+                重置图层
             </button>
             <div id="olMap" style={{width: "100%",height: "500px"}}  />
         </div>

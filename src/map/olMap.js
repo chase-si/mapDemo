@@ -10,9 +10,11 @@ import { Style, Fill, Stroke, Circle ,Text,Icon } from 'ol/style';
 //几何
 import { Circle as geomCircle,Point ,LineString,MultiLineString} from 'ol/geom';
 
-import {transform,fromLonLat} from 'ol/proj';
+import {transform,fromLonLat,get} from 'ol/proj';
 //要素
 import Feature from 'ol/Feature';
+
+import Draw from 'ol/interaction/Draw';
 
 //核心组件
 let map = null;
@@ -216,13 +218,12 @@ export const drawTreeNew = (data, mapInstance) => {
     const layer = new LayerVector({
         source: createVectorSource(data)
     });
-    //重新设置Layers
-    mapInstance.setLayers(layers);
     //添加
     mapInstance.addLayer(layer);
     //中心坐标
     view.setCenter(convertTransform([longitude, latitude]));
     view.setZoom(5);
+    return layer;
 };
 
 //创建静态图片
@@ -246,7 +247,8 @@ export const createPictrueNew = (data) => {
     })
     map.addLayer(layerImage);
     view.setCenter(convertTransform([start[0], start[1]]));
-    console.log(map.getLayers());
+    return layerImage;
+
 }
 
 /**
@@ -297,7 +299,6 @@ function createVectorSourcePoint(params) {
 
 
 export const crossPointNew = (data) => {
-    console.log(data);
     const layerVector = new LayerVector({
         source: createVectorSourcePoint(data),
         style: myStyle
@@ -305,4 +306,50 @@ export const crossPointNew = (data) => {
     map.addLayer(layerVector);
     view.setCenter(convertTransform(data["intersection-point"]));
     view.setZoom(6);
+}
+
+function createVectorSourceChooseSensor(data){
+
+}
+
+export const chooseSensor = (mapInstance) => {
+    const source = new SourceVector();
+    let selectCoord = [] 
+    const layerVector = new LayerVector({
+        source: source
+    });
+    mapInstance.addLayer(layerVector)
+    console.log(mapInstance.getLayers());
+   let draw =  new Draw({
+        source: source,
+        type: 'Polygon',
+      })
+    mapInstance.addInteraction(draw);
+    draw.on('drawstart',(e) => {
+        source.clear()
+    })
+    draw.on('drawend',(e) => {
+        console.log();
+        selectCoord = e.feature.getGeometry().getExtent()
+    })
+      return {layerVector,draw};
+}
+
+//结束选框
+export const finishLayerDraw = (mapInstance,draw) => {
+    mapInstance.removeInteraction(draw);
+   
+}
+
+//删除图层
+export const removeLayerDraw = (mapInstance,layerVector) => {
+    console.log("删除图层");
+    mapInstance.removeLayer(layerVector)
+    
+}
+
+//重置图层
+export const resetLayerDraw = (mapInstance) => {
+    console.log("重置图层");
+    mapInstance.setLayers(layers);
 }

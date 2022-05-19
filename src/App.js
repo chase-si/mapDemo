@@ -8,6 +8,7 @@ import SelectDevices from './pages/selectDevices';
 import CrossPoint from './pages/crossPoint';
 import OlAnalysis from './pages/olAnalysis';
 import OlCrossPoint from './pages/olCrossPoint';
+import OlSelectDevices from './pages/olSelectDevices';
 
 const routers = [{
 	path: '/drawnet',
@@ -33,6 +34,7 @@ const routers = [{
 	path: '/selectDevices',
 	component: <>
 			<SelectDevices /> 
+			<OlSelectDevices/>
 			</>
 }]
 

@@ -1,0 +1,70 @@
+export const DATA = {
+    "children": [
+        {
+            "station_name": "中星网格站01",
+            "sensor_type": "网格化频谱监测设备",
+            "protocol": "416a",
+            "sensor_id": "550639588180312064",
+            "node_id": "550639588180312065",
+            "longitude": 136,
+            "status": 1,
+            "parent_id": "528980836951867392",
+            "node_type": "monitoring",
+            "compass": null,
+            "latitude": 39,
+            "location": null,
+            "sensor_code": "ZX00000001"
+        },
+        {
+            "station_name": "中星网格站02",
+            "sensor_type": "网格化频谱监测设备",
+            "protocol": "416a",
+            "sensor_id": "550656558720172032",
+            "node_id": "550656558720172033",
+            "longitude": 116,
+            "status": 1,
+            "parent_id": "528980836951867392",
+            "node_type": "monitoring",
+            "compass": null,
+            "latitude": 42,
+            "location": null,
+            "sensor_code": "ZX00000010"
+        },
+        {
+            "station_name": "七所车载站01",
+            "sensor_type": "装甲车载式频谱监测管理设备",
+            "protocol": "416a",
+            "sensor_id": "550975626274750464",
+            "node_id": "550975626274750465",
+            "longitude": 106,
+            "status": 1,
+            "parent_id": "528980836951867392",
+            "node_type": "monitoring",
+            "compass": null,
+            "latitude": 36,
+            "location": null,
+            "sensor_code": "TPJ0020000"
+        },
+        {
+            "station_name": "test9",
+            "sensor_type": "1",
+            "protocol": "416a",
+            "sensor_id": "551405070000930816",
+            "node_id": "551405070000930817",
+            "longitude": 95,
+            "freq_upper_limit": 500000000000000000,
+            "status": 0,
+            "parent_id": "528980836951867392",
+            "node_type": "monitoring",
+            "latitude": 44,
+            "freq_under_limit": 3000000,
+            "sensor_code": "JD00000089"
+        }
+    ],
+    "station_name": "青岛感知中心站",
+    "node_id": "528980836951867392",
+    "longitude": 120,
+    "node_type": "center",
+    "latitude": 36,
+    "location": "北京"
+}
