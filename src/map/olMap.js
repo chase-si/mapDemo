@@ -6,7 +6,7 @@ import { Tile, Vector as LayerVector,Image as LayerImage } from 'ol/layer';
 //数据源
 import { OSM, Vector as SourceVector,ImageStatic } from 'ol/source';
 //样式
-import { Style, Fill, Stroke, Circle ,Text} from 'ol/style';
+import { Style, Fill, Stroke, Circle ,Text,Icon } from 'ol/style';
 //几何
 import { Circle as geomCircle,Point ,LineString,MultiLineString} from 'ol/geom';
 
@@ -63,6 +63,36 @@ function createLineString(){
     })
 }
 
+
+
+let myStyle = function(feature) {
+    let geometry = feature.getGeometry();
+    let styles = [
+    new Style({
+        stroke: new Stroke({  
+            width: 3,  
+            color: "#f4ea2a" 
+        })  
+    })
+    ];
+    geometry.forEachSegment(function(start, end) {
+        let dx = end[0]- start[0]; 
+        let dy = end[1] - start[1];
+        let rotation = Math.atan2(dy, dx);
+        styles.push(new Style({
+            geometry: new Point(end),
+            image: new Icon({
+                src: require('./../static/img/arrow.png') ,
+                anchor: [0.75, 0.5],
+                rotateWithView: true,
+                rotation: -rotation
+            })
+        }));
+    });
+    return styles;
+};
+
+
 //文字的样式
 function createLabelStyle(feature){
   return new Style({
@@ -106,15 +136,17 @@ function createDotFeature(params,opt_radius) {
 
 
 //画线
-function createLineFeature(params) {
+function createLineFeature(params,style) {
     const {longitude, latitude,parent_longitude,parent_latitude} = params;
     const lineFeature = new Feature({
         geometry:new LineString(
-            [convertTransform([parent_longitude, parent_latitude]) , 
-             convertTransform([longitude,latitude])]
+            [convertTransform([longitude,latitude]),
+             convertTransform([parent_longitude, parent_latitude]) ]
         )
     });
-    lineFeature.setStyle(createLineString());
+    if (style ?? false){
+        lineFeature.setStyle(style);
+    }
     return lineFeature;
 };
 
@@ -144,7 +176,7 @@ function createVectorSource(params) {
         return [createCircleFeature(sensor,2000),
                 createCircleFeature(sensor,12000),
                 createTitleFeature(sensor),
-                createLineFeature({...sensor ,parent_longitude: longitude, parent_latitude: latitude})];
+                createLineFeature({...sensor ,parent_longitude: longitude, parent_latitude: latitude},createLineString())];
     })?.reduce((a,b) => a.concat(b));
 
     return new SourceVector({
@@ -267,7 +299,8 @@ function createVectorSourcePoint(params) {
 export const crossPointNew = (data) => {
     console.log(data);
     const layerVector = new LayerVector({
-        source: createVectorSourcePoint(data)
+        source: createVectorSourcePoint(data),
+        style: myStyle
     });
     map.addLayer(layerVector);
     view.setCenter(convertTransform(data["intersection-point"]));
