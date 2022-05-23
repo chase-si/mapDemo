@@ -17,9 +17,10 @@ const OlSelectDevices = () => {
 
     const beginSelect = () => {
         console.log('开始框选')
-       const {layerVector,draw} =  chooseSensor(mapInstance.current)
+       const {layerVector,draw} =  chooseSensor(mapInstance.current,DATA.children,beginSelectCallback)
         mapInstance.layer = layerVector
         mapInstance.draw = draw
+
     }
 
     const beginSelectCallback = (data) => {

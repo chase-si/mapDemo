@@ -6,11 +6,11 @@ import { Tile, Vector as LayerVector,Image as LayerImage } from 'ol/layer';
 //数据源
 import { OSM, Vector as SourceVector,ImageStatic } from 'ol/source';
 //样式
-import { Style, Fill, Stroke, Circle ,Text,Icon } from 'ol/style';
+import { Style, Fill, Stroke ,Text,Icon } from 'ol/style';
 //几何
-import { Circle as geomCircle,Point ,LineString,MultiLineString} from 'ol/geom';
+import { Circle as geomCircle,Point ,LineString } from 'ol/geom';
 
-import {transform,fromLonLat,get} from 'ol/proj';
+import {transform,fromLonLat} from 'ol/proj';
 //要素
 import Feature from 'ol/Feature';
 
@@ -24,9 +24,13 @@ const defaultCoord = 'EPSG:3857';
 // EPSG:4326  是国际标准，GPS坐标
 const isoCoord = 'EPSG:4326';
 
-//转换真实坐标
+//将地理坐标转为投影坐标
 function convertTransform(vector){
     return transform(vector, isoCoord, defaultCoord)
+}
+//将投影坐标转为地理坐标
+function theConvertTransform(vector){
+    return transform(vector, defaultCoord,isoCoord)
 }
 
 //圆圈的样式
@@ -155,7 +159,6 @@ function createLineFeature(params,style) {
 //创建文字
 function createTitleFeature (params) {
     const {station_name,longitude,latitude} = params
-    console.log(params);
     const titleFeature = new Feature({
         geometry: new Point(fromLonLat([longitude, latitude])),
         name: station_name
@@ -308,18 +311,54 @@ export const crossPointNew = (data) => {
     view.setZoom(6);
 }
 
-function createVectorSourceChooseSensor(data){
 
+function IsPtInPoly(coordinate, points) {
+    const longitude = coordinate[0]
+    const latitude = coordinate[1]
+	let iSum = 0,
+		iCount;
+	let dLon1, dLon2, dLat1, dLat2;
+	iCount = points.length;
+	for (let i = 0; i < iCount; i++) {
+		if (i == iCount - 1) {
+			dLon1 = points[i][0];
+			dLat1 = points[i][1];
+			dLon2 = points[0][0];
+			dLat2 = points[0][1];
+		} else {
+			dLon1 = points[i][0];
+			dLat1 = points[i][1];
+			dLon2 = points[i + 1][0];
+			dLat2 = points[i + 1][1];
+            // console.log("经度",dLon1,":",dLon2);
+            // console.log("纬度",dLat1,":",dLat2);
+		}
+		//以下语句判断A点是否在边的两端点的水平平行线之间，在则可能有交点，开始判断交点是否在左射线上
+		if (((latitude >= dLat1) && (latitude < dLat2)) || ((latitude >= dLat2) && (latitude < dLat1))) {
+            // console.log("d",Math.abs(dLat1 - dLat2));
+			if (Math.abs(dLat1 - dLat2) > 0) {
+				//得到 A点向左射线与边的交点的x坐标：
+			  const dLon = dLon1 - ((dLon1 - dLon2) * (dLat1 - latitude)) / (dLat1 - dLat2);
+				if (dLon < longitude)
+					iSum++;
+			}
+		}
+	}
+	if (iSum % 2 != 0)
+		return true;
+	return false;
 }
 
-export const chooseSensor = (mapInstance) => {
-    const source = new SourceVector();
-    let selectCoord = [] 
+
+export const chooseSensor = (mapInstance,data,dispatch) => {
+    const source = new SourceVector({projection: isoCoord});
     const layerVector = new LayerVector({
         source: source
     });
+    let selectedPoint =[]
+    
     mapInstance.addLayer(layerVector)
-    console.log(mapInstance.getLayers());
+
    let draw =  new Draw({
         source: source,
         type: 'Polygon',
@@ -328,9 +367,17 @@ export const chooseSensor = (mapInstance) => {
     draw.on('drawstart',(e) => {
         source.clear()
     })
+    
     draw.on('drawend',(e) => {
+        const  polygon = e.feature.getGeometry();
         console.log();
-        selectCoord = e.feature.getGeometry().getExtent()
+        for (let i = 0; i < data.length; i++) {
+            const coordinate = convertTransform([data[i].longitude,data[i].latitude])
+            if (IsPtInPoly(coordinate,polygon.getCoordinates()[0])){
+                selectedPoint.push(data[i])
+            }
+        }
+        dispatch(selectedPoint);
     })
       return {layerVector,draw};
 }
@@ -338,14 +385,12 @@ export const chooseSensor = (mapInstance) => {
 //结束选框
 export const finishLayerDraw = (mapInstance,draw) => {
     mapInstance.removeInteraction(draw);
-   
 }
 
 //删除图层
 export const removeLayerDraw = (mapInstance,layerVector) => {
     console.log("删除图层");
     mapInstance.removeLayer(layerVector)
-    
 }
 
 //重置图层
