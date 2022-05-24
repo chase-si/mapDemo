@@ -41,9 +41,11 @@ function theConvertTransform(vector){
 //圆圈的样式
 function drawStyle() {
     return new Style({
+        //背景
         fill: new Fill({
           color: "rgba(0, 191, 255, .2)",
         }),
+        //边框
         stroke: new Stroke({
           color: "rgba(0, 191, 255, .6)",
           width: 2,
@@ -75,7 +77,7 @@ function createLineString(){
 }
 
 
-
+//箭头的样式
 let myStyle = function(feature) {
     let geometry = feature.getGeometry();
     let styles = [
