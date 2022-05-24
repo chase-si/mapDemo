@@ -38,10 +38,6 @@ const OlSelectDevices = () => {
         console.log(data)
 
     }
-    const finishSelect = () => {
-        console.log('结束框选')
-        finishLayerDraw(mapInstance.current,mapInstance.draw)
-    }
 
     return (
         <div>
@@ -49,9 +45,6 @@ const OlSelectDevices = () => {
                 开始框选
             </button>
             <button onClick={cancelSelect}>
-                取消框选
-            </button>
-            <button onClick={finishSelect}>
                 结束框选
             </button>
             <div id="olMap" style={{width: "100%",height: "500px"}}  />

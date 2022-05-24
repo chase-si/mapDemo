@@ -24,6 +24,7 @@ const OlDrawNet = () => {
     const handleBtn = () => {
         // 所有需要map实例的地方把他传到function里
         mapInstance.layer =  drawTreeNew(DATA,mapInstance.current)
+         
         mapInstance.overlay = selectInfoModal(mapInstance.current,DATA.children,mapInstance.layer,'popup',modalCallBack);
     }
 
@@ -75,8 +76,6 @@ const OlDrawNet = () => {
                 <a href="#" className="ol-popup-closer" onClick={modalCloser}></a>
                 {modalData && modalInfo(modalData)}
             </div>
-
-
         </div>
     )
 }

@@ -404,15 +404,15 @@ export const chooseSensor = (mapInstance,data,dispatch) => {
         source: source
     });
     let selectedPoint = []
-    
-    mapInstance.addLayer(layerVector)
 
+    mapInstance.addLayer(layerVector)
    let draw =  new Draw({
         source: source,
         type: 'Polygon',
       })
     mapInstance.addInteraction(draw);
     draw.on('drawstart',(e) => {
+        selectedPoint = []
         source.clear()
     })
     
