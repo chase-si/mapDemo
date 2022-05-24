@@ -1,18 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect ,useRef} from 'react'
 
 import { initCesium, crossPointNew } from '../../map/olMap'
 import { DATA } from '../crossPoint/constants'
 
 const OlCrossPoint = () => {
+    const mapInstance = useRef(null)
     useEffect(() => {
-        initCesium('olMap')
+        mapInstance.current =  initCesium('olMap')
     }, [])
 
     const handleBtn = () => {
         crossPointNew({
             ...DATA,
             crossEntities: []
-        })
+        },mapInstance.current)
     }
     
     return (

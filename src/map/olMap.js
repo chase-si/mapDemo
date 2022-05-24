@@ -14,15 +14,20 @@ import {transform,fromLonLat} from 'ol/proj';
 //要素
 import Feature from 'ol/Feature';
 
-import Draw from 'ol/interaction/Draw';
+import {Draw} from 'ol/interaction';
 
-//核心组件
-let map = null;
+import Overlay from 'ol/Overlay';
 
 // EPSG:3857 在openlayers 中默认的坐标就是google的摩卡托坐标
 const defaultCoord = 'EPSG:3857';
 // EPSG:4326  是国际标准，GPS坐标
 const isoCoord = 'EPSG:4326';
+
+const innerRadius = 2000;
+
+const outerRadius = 12000;
+
+const dotRadius = 4000;
 
 //将地理坐标转为投影坐标
 function convertTransform(vector){
@@ -88,7 +93,7 @@ let myStyle = function(feature) {
         styles.push(new Style({
             geometry: new Point(end),
             image: new Icon({
-                src: require('./../static/img/arrow.png') ,
+                src: require('./../static/img/arrow.png'),
                 anchor: [0.75, 0.5],
                 rotateWithView: true,
                 rotation: -rotation
@@ -158,10 +163,11 @@ function createLineFeature(params,style) {
 
 //创建文字
 function createTitleFeature (params) {
-    const {station_name,longitude,latitude} = params
+    const {station_name,longitude,latitude,sensor_code} = params
     const titleFeature = new Feature({
         geometry: new Point(fromLonLat([longitude, latitude])),
-        name: station_name
+        name: station_name,
+        code: sensor_code
     })
     titleFeature.setStyle(createLabelStyle(titleFeature));
     return titleFeature;
@@ -172,14 +178,14 @@ function createVectorSource(params) {
     const {children,longitude,latitude} = params;
     //父
     const center = [
-        createCircleFeature(params,2000),
-        createCircleFeature(params,12000),
+        createCircleFeature(params,innerRadius),
+        createCircleFeature(params,outerRadius),
         createTitleFeature(params)
     ];
     //儿子
     const drawing = children?.map(sensor => {
-        return [createCircleFeature(sensor,2000),
-                createCircleFeature(sensor,12000),
+        return [createCircleFeature(sensor,innerRadius),
+                createCircleFeature(sensor,outerRadius),
                 createTitleFeature(sensor),
                 createLineFeature({...sensor ,parent_longitude: longitude, parent_latitude: latitude},createLineString())];
     })?.reduce((a,b) => a.concat(b));
@@ -208,7 +214,7 @@ export const initCesium = (domId) => {
     //先清除在创建
     const obj = document.getElementById(domId);
     obj.innerHTML='';
-     map = new Map({
+     const map = new Map({
         layers: layers,
         target: domId,
         view: view
@@ -243,12 +249,12 @@ function createImageStaticSource({
 }
 
 //创建静态图层
-export const createPictrueNew = (data) => {
+export const createPictrueNew = (data,mapInstance) => {
     const {start} = data
     const layerImage = new LayerImage({
         source: createImageStaticSource(data)
     })
-    map.addLayer(layerImage);
+    mapInstance.addLayer(layerImage);
     view.setCenter(convertTransform([start[0], start[1]]));
     return layerImage;
 
@@ -280,7 +286,7 @@ function createVectorSourcePoint(params) {
     } = params
     const center = [
         createTitleFeature({station_name,longitude,latitude}),
-        createDotFeature({longitude,latitude},4000),
+        createDotFeature({longitude,latitude},dotRadius),
     ]
     const drawing = channels?.map(channel => {
        const distance =  calcPositionByDistance({
@@ -288,8 +294,8 @@ function createVectorSourcePoint(params) {
         latitude: channel[1],
         angle: channel[3]});
         const coord = {longitude: channel[0],latitude: channel[1]}
-        return [createCircleFeature(coord,2000),
-                createCircleFeature(coord,12000),
+        return [createCircleFeature(coord,innerRadius),
+                createCircleFeature(coord,outerRadius),
                 createTitleFeature({...coord, station_name: channel[9]}),
                 createLineFeature({...coord ,parent_longitude: distance.longitude, parent_latitude: distance.latitude})
             ];
@@ -301,12 +307,12 @@ function createVectorSourcePoint(params) {
 }
 
 
-export const crossPointNew = (data) => {
+export const crossPointNew = (data,mapInstance) => {
     const layerVector = new LayerVector({
         source: createVectorSourcePoint(data),
         style: myStyle
     });
-    map.addLayer(layerVector);
+    mapInstance.addLayer(layerVector);
     view.setCenter(convertTransform(data["intersection-point"]));
     view.setZoom(6);
 }
@@ -330,12 +336,9 @@ function IsPtInPoly(coordinate, points) {
 			dLat1 = points[i][1];
 			dLon2 = points[i + 1][0];
 			dLat2 = points[i + 1][1];
-            // console.log("经度",dLon1,":",dLon2);
-            // console.log("纬度",dLat1,":",dLat2);
 		}
 		//以下语句判断A点是否在边的两端点的水平平行线之间，在则可能有交点，开始判断交点是否在左射线上
 		if (((latitude >= dLat1) && (latitude < dLat2)) || ((latitude >= dLat2) && (latitude < dLat1))) {
-            // console.log("d",Math.abs(dLat1 - dLat2));
 			if (Math.abs(dLat1 - dLat2) > 0) {
 				//得到 A点向左射线与边的交点的x坐标：
 			  const dLon = dLon1 - ((dLon1 - dLon2) * (dLat1 - latitude)) / (dLat1 - dLat2);
@@ -349,13 +352,58 @@ function IsPtInPoly(coordinate, points) {
 	return false;
 }
 
+export const modalClose = (overlay) => {
+    overlay.setPosition(undefined);
+    return false;
+}
+
+export const selectInfoModal= (mapInstance,data,layer,containerId,dispatch) => {
+    const features = layer.getSource().getFeatures();
+    const container = document.getElementById(containerId);
+    const overlay = new Overlay({
+        element: container,
+        autoPan: {
+          animation: {
+            duration: 250,
+          },
+        },
+      });
+
+    mapInstance.addOverlay(overlay)
+        mapInstance.on('singleclick', function (evt) {
+        const coordinate = evt.coordinate;
+        const pixelFeature = mapInstance.forEachFeatureAtPixel(evt.pixel,(feature) => feature)
+        // 文字
+        if (pixelFeature) {
+            if (pixelFeature.getGeometry() instanceof Point) {
+                 dispatch(data.find(item => item.sensor_code === pixelFeature.get('code')))
+                 overlay.setPosition(coordinate);
+            }
+        }
+
+        //几何
+        features.forEach(feature => {
+            const geometry = feature.getGeometry();
+            if (geometry instanceof geomCircle && geometry.getRadius() === outerRadius){
+                data.forEach(station => {
+                    if (geometry.intersectsCoordinate(convertTransform([station.longitude, station.latitude])) && 
+                        geometry.intersectsCoordinate(coordinate)){
+                            dispatch(station)
+                            overlay.setPosition(coordinate);
+                 }
+              })
+            }
+          })
+        });
+        return overlay;
+}
 
 export const chooseSensor = (mapInstance,data,dispatch) => {
     const source = new SourceVector({projection: isoCoord});
     const layerVector = new LayerVector({
         source: source
     });
-    let selectedPoint =[]
+    let selectedPoint = []
     
     mapInstance.addLayer(layerVector)
 
@@ -370,7 +418,6 @@ export const chooseSensor = (mapInstance,data,dispatch) => {
     
     draw.on('drawend',(e) => {
         const  polygon = e.feature.getGeometry();
-        console.log();
         for (let i = 0; i < data.length; i++) {
             const coordinate = convertTransform([data[i].longitude,data[i].latitude])
             if (IsPtInPoly(coordinate,polygon.getCoordinates()[0])){

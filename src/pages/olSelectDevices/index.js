@@ -20,7 +20,6 @@ const OlSelectDevices = () => {
        const {layerVector,draw} =  chooseSensor(mapInstance.current,DATA.children,beginSelectCallback)
         mapInstance.layer = layerVector
         mapInstance.draw = draw
-
     }
 
     const beginSelectCallback = (data) => {
@@ -37,8 +36,8 @@ const OlSelectDevices = () => {
     const cancelSelectCallback = (data) => {
         console.log('取消框选的回调')
         console.log(data)
-    }
 
+    }
     const finishSelect = () => {
         console.log('结束框选')
         finishLayerDraw(mapInstance.current,mapInstance.draw)
